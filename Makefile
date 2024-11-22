@@ -2,7 +2,7 @@
 DOCKER_COMPOSE = docker compose -f ./srcs/docker-compose.yml
 DATA_PATH = /home/test/data
 
-all: clean
+all: down
 	@mkdir -p $(DATA_PATH)
 	@mkdir -p $(DATA_PATH)/mariadb
 	@mkdir -p $(DATA_PATH)/wordpress
@@ -12,11 +12,11 @@ all: clean
 
 down:
 	@$(DOCKER_COMPOSE) down
-
-clean: down
 	@docker system prune -a -f
 	@docker volume prune -f
 	@docker network prune -f
+
+delete:
 	@sudo rm -rf $(DATA_PATH)/mariadb/*
 	@sudo rm -rf $(DATA_PATH)/wordpress/*
 
@@ -31,6 +31,6 @@ status:
 	@echo "\nNETWORKS:\n"
 	@docker network ls
 
-re: clean all
+re: down delete all
 
-.PHONY: all down clean stop status re
+.PHONY: all down delete stop status re

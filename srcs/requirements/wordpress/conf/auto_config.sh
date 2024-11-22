@@ -2,7 +2,7 @@
 set -e
 
 echo "Waiting for MariaDB..."
-while ! mysqladmin ping -h mariadb --silent; do
+while ! mysqladmin ping -h mariadb -u"${SQL_USER}" -p"${SQL_PASSWORD}" --silent; do
     sleep 5
 done
 echo "MariaDB is ready!"
