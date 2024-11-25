@@ -2,17 +2,25 @@
 set -e
 
 echo "Waiting for MariaDB..."
-while ! mysqladmin ping -h mariadb -u"${SQL_USER}" -p"${SQL_PASSWORD}" --silent; do
+for i in {1..30}; do
+    if mysqladmin ping -h mariadb -u"${SQL_USER}" -p"${SQL_PASSWORD}" --silent; then
+        echo "MariaDB is ready!"
+        break
+    fi
+    echo "Waiting for MariaDB... attempt $i/30"
     sleep 5
 done
-echo "MariaDB is ready!"
 
 cd /var/www/wordpress
 
-if [ ! -f wp-config.php ]; then
+# Check if WordPress core files need to be downloaded
+if [ ! -f "index.php" ]; then
     echo "Installing WordPress..."
     wp core download --allow-root
-    
+fi
+
+# Check if WordPress needs to be configured
+if [ ! -f "wp-config.php" ]; then
     echo "Configuring WordPress..."
     wp config create --allow-root \
         --dbname="${SQL_DATABASE}" \
@@ -39,12 +47,12 @@ if [ ! -f wp-config.php ]; then
 
     echo "Setting up theme..."
     wp theme install twentytwentythree --activate --allow-root
-    
-    echo "Setting permissions..."
-    chown -R www-data:www-data /var/www/wordpress
-    chmod -R 775 wp-content
-    
-    echo "WordPress setup completed"
 fi
 
+echo "Setting correct permissions..."
+find /var/www/wordpress -type d -exec chmod 755 {} \;
+find /var/www/wordpress -type f -exec chmod 644 {} \;
+chown -R www-data:www-data /var/www/wordpress
+
+echo "Starting PHP-FPM..."
 exec php-fpm7.4 -F

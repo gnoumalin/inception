@@ -1,6 +1,6 @@
 # Variables
 DOCKER_COMPOSE = docker compose -f ./srcs/docker-compose.yml
-DATA_PATH = /home/test/data
+DATA_PATH = /home/tmekhzou42/data
 
 all: down
 	@mkdir -p $(DATA_PATH)
@@ -11,11 +11,10 @@ all: down
 	@$(DOCKER_COMPOSE) up --build
 
 down:
-	@$(DOCKER_COMPOSE) down
+	@$(DOCKER_COMPOSE) down --volumes
 	@docker system prune -a -f
-	@docker volume prune -f
+	@docker volume rm -f wordpress mariadb || true
 	@docker network prune -f
-
 delete:
 	@sudo rm -rf $(DATA_PATH)/mariadb/*
 	@sudo rm -rf $(DATA_PATH)/wordpress/*

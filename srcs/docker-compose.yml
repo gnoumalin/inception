@@ -48,18 +48,20 @@ services:
 
 volumes:
   wordpress:
+    name : wordpress
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/home/tmehzou42/data/wordpress'
+      device: '/home/tmekhzou42/data/wordpress'
 
   mariadb:
+    name: mariadb
     driver: local
     driver_opts:
       type: 'none' 
       o: 'bind'
-      device: '/home/tmehzou42/data/mariadb'
+      device: '/home/tmekhzou42/data/mariadb'
     
 networks:
   inception:
